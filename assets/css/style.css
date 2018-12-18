@@ -56,14 +56,15 @@ body {
 
 #reset {
     text-align: center;
-    margin-top: 50px; 
+    margin-top: 30px; 
     border-radius: 8px;
     background-color: #002858;
     border: 1px solid #000000;
-    transition-duration: 0.3s;
+    transition-duration: 0.4s;
     font-size: 24px;
     font-weight: bold;
     color: #ffffff;
+    margin-bottom: 30px;
 }
 
 #reset:hover {

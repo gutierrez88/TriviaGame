@@ -67,8 +67,9 @@ var didNotAnswer = 0;
 var numbers=[];
 var time = 10;
 var picked = {};
-var userGuess;
+var userGuess ="";
 var intervalId;
+var useThisNumber;
 var number;
 
 $("#reset").hide();
@@ -78,46 +79,49 @@ $("#answers2").hide();
 $("#answers3").hide();
 $("#question").hide();
 $("#time").hide();
-$("#next").hide();
+
+
 
 
 $("#start").on("click",function(){
     $("#start").hide();
-    $("#start").attr("disabled", true);
-    pick();
+    generator();
 
 });
 
-var pick = function (){
-    number =  Math.floor(Math.random()*questions.length)
-    numberGen()
-    
-}
+function generator(){ 
+    number = Math.floor(Math.random()*questions.length);
+    pick()
+ }
 
-var numberGen = function () {
+var pick = function (){
     if (numbers.length === questions.length){
         gameover();
-    }else if (numbers.indexOf(number) === -1){
-        numbers.push(number);
-        picked = questions[number];
-        slide();
+    }else if (numbers.indexOf(number) != -1){
+        generator()
     }else{
-        pick();
-    }
+        useThisNumber = number;
+        numbers.push(useThisNumber);
+        picked = questions[useThisNumber];
+        slide()
+    } 
     
-    console.log(picked);
-    console.log(numbers);
 }
 
+
+    
+
+
 var slide = function (){
-    timer()
+    timer();
+    $("#reset").hide();
     $("#answers0").show();
     $("#answers1").show();
     $("#answers2").show();
     $("#answers3").show();
     $("#question").show();
     $("#time").show();
-    $("#time").html("<h1>" + time + "</h1>")
+    $("#time").html("<h1>" + time + "</h1>");
 
     $("#question").html(picked.question);
     
@@ -132,18 +136,29 @@ var slide = function (){
 
     $("#answers3").addClass("btn btn-large mx-auto");
     $("#answers3").text(picked.answers[3]);
+}
 
-    $("button").on("click", function() {
-        userGuess = $(this).val();
-        stop();
-        slide2();
-        time = 10;
-        console.log(userGuess);
-    });
-};
+$(".ansbutton").on("click", function() {
+    userGuess = $(this).val();
+    console.log(userGuess)
+    slide2()
+    stop()      
+});
 
-var slide2 =function (){
-    if ( userGuess == picked.correct[0]){
+$("#reset").on("click", function() {
+    correct = 0;
+    wrong = 0;
+    didNotAnswer = 0;
+    numbers=[];
+    picked = {};
+    userGuess ="";
+    generator()
+});
+
+function slide2(){
+    setTimeout(generator, 3000)
+    if (userGuess == picked.correct[0]){
+        userGuess="";
         $("#question").html("<h3>" + " Your are Correct! " + "<h3>");
         $("#answers0").hide();
         $("#answers1").hide();
@@ -151,19 +166,17 @@ var slide2 =function (){
         $("#answers3").hide();
         $("#time").hide();
         correct++;
-        userGuess = "";
-        setTimeout(pick, 3000)
     }else{
-        $("#question").html("<h3>" + " Sorry, that is incorrect. The Correct Answer is " + "<h3>");
+        userGuess="";
+        $("#question").html("<h3>" + " Sorry, that is incorrect. The Correct Answer is " + "<h3><br>" + picked.correct[1]);
         $("#answers1").hide();
-        $("#answers0").html(picked.correct[1]);
+        $("#answers0").hide();
         $("#answers2").hide();
         $("#answers3").hide();
         $("#time").hide();
         wrong++;
-        userGuess = "";
-        setTimeout(pick, 5000)
     }
+    
 }
 
 function timer() {
@@ -172,20 +185,42 @@ function timer() {
 }
 
 function decrement(){
-    time--
+    time--;
     $("#time").html("<h1>" + time + "</h1>");
 
     if (time === 0) {
         stop();
+        timeup();
     }
 }
 
 function stop() {
     clearInterval(intervalId);
+    time = 10;
+}
+
+function timeup(){
+    setTimeout(generator, 3000)
+    $("#question").html("<h3>" + " Sorry, Your time is up. The Correct Answer is " + "<h3><br>" + picked.correct[1]);
+    $("#answers1").hide();
+    $("#answers0").hide();
+    $("#answers2").hide();
+    $("#answers3").hide();
+    $("#time").hide();
+    didNotAnswer++;
+    time = 10;
 }
 
 function gameover(){
-    console.log("working")
+    stop()
+    $("#reset").show();
+    $("#answers0").hide();
+    $("#answers1").hide();
+    $("#answers2").hide();
+    $("#answers3").hide();
+    $("#question").show();
+    $("#time").hide();
+    $("#question").html("Good Job!<br>" + "Correct: " + correct + "<br> Wrong: " + wrong + "<br> Did not Answer: " + didNotAnswer);
 }
 
 
